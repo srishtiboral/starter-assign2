@@ -1,0 +1,71 @@
+Before submitting this file, make sure that there are no more TODO
+placeholders remaining in the file (and remove this comment too).
+
+Warmup
+------
+
+Q1. The display of the Stack in the debugger uses the label 'top' to mark the top end of the stack. How are the contents labeled when the Stack contains only one element?
+A1. TODO
+
+Q2. For which type of inputs does the function go into an infinite loop?
+A2. TODO
+
+Q3. Show your edited code for `duplicateNegatives` that fixes the problem with the infinite loop.
+A3. TODO
+
+Q4. What is the better fix to `sumStack` that corrects the bug?
+A4. TODO
+
+
+Maze
+----
+Q5. After you have written your test cases, describe your testing strategy to confirm that your `validatePath` operates as intended. How confident are you that it works correctly in all cases?
+A5. TODO
+
+Q6. Step 2 of our BFS algorithm will add the path {r4c3} to our queue. Step 3 will dequeue that path and add some number of additional paths to the queue. What are all the paths we add to our queue as we process the "otherwise" branch of Step 3 for the {r4c3} path?
+A6. TODO
+
+Q7. In Q6, you listed some number of paths that were added to our queue. Now, continue tracing through the algorithm by hand, repeating Step 3 until all of the paths you added in Q6 have been dequeued and we have executed the "otherwise" branch of Step 3 for each of them. Stop once you reach that point, and list all the paths that are in the queue at that time.
+A7. TODO
+
+Q8. Assume we kick off our BFS algorithm at the blue cell labeled S, and our algorithm terminates as soon as we dequeue a path that ends with an exit. In that case, what are all the exits in the maze above that could trigger the termination of our BFS algorithm? (List all such exits.) If there are any exits that BFS would not be able to reach, briefly explain why it would not be able to reach them. Furthermore, if there are multiple exits that might cause BFS to terminate when starting from S, briefly explain why that is possible and what implementation detail(s) would affect which of those exits is the one that causes our BFS to stop.
+A8. TODO
+
+Q9. Starting at S in this modified maze, what are all the exits that could trigger the termination of our BFS algorithm? (List all such exits.) If there are any exits that BFS would not be able to reach, briefly explain why it would not be able to reach them. Furthermore, if there are multiple exits that might cause BFS to terminate when starting from S, briefly explain why that is possible and what implementation detail(s) would affect which of those exits is the one that causes our BFS to stop.
+A9. TODO
+
+Q10. Most students are sold on the benefit of the fancy features provided by `Vector`, `Grid`, and `Set` but the ADT skeptics may question the value of `Stack` and `Queue` ADTs, seeing them as nothing more than a restricted `Vector`. Make your best argument to convince them of the benefits these ADTS have over `Vector`.
+A10. TODO
+
+Q11. Step 2 of our DFS algorithm will push the path {r4c3} onto a stack. Step 3 will pop that path and add some number of additional paths to the stack. What are all the paths we add to our stack as we process the "otherwise" branch of Step 3 for the {r4c3} path? In your response, place them in a stack, clearly labeling which one is on top.
+A11. TODO
+
+Q12. Consider your stack from Q11. We will continue tracing through the DFS algorithm: pop the top element of that stack, and process it according to the instructions in Step 3 of the algorithm. This will result in some number of additional paths being pushed onto the stack. Show the resulting stack. In your response, include all paths currently on the stack, and clearly indicate which one is on top.
+A12. TODO
+
+Q13. Consider your stack from Q12. Once again, pop the top element of that stack, and process it according to the instructions in Step 3 of the algorithm. Show the resulting stack.
+A13. TODO
+
+Q14. Assume we kick off our DFS algorithm at the blue cell labeled S, and our algorithm terminates as soon as we pop a path that ends with an exit. In that case, what are all the exits in the maze above that could trigger the termination of our DFS algorithm? (List all such exits.) If there are any exits that DFS would not be able to reach, briefly explain why it would not be able to reach them. Furthermore, if there are multiple exits that might cause DFS to terminate when starting from S, briefly explain why that is possible and what implementation detail(s) would affect which of those exits is the one that causes our DFS to stop.
+A14. TODO
+
+Q15. Starting at S in this modified maze, what are all the exits that could trigger the termination of our DFS algorithm? (List all such exits.) Briefly explain why this list is or is not the same as the list for Q14.
+A15. TODO
+
+
+Search Engine
+-------------
+Q16. List the contents of the inverted index built from the `res/tiny.txt` database file.
+A16. TODO
+
+
+Beyond Algorithmic Analysis
+---------------------------
+Q17. In a short paragraph, describe a real or plausible scenario in which reworking an algorithm to improve its efficiency might benefit Earth's environment or humanity as a whole. Include your thoughts on how a software engineer working on this piece of code might identify such potential benefits and take them into consideration when designing the code.
+A17. TODO
+
+Q18. According to the contract that IBM struck with the state of Indiana, the criteria for optimization were improving efficiency of the overall welfare system and reducing fraud. Criteria for reducing wait times and wrongful denials were not included.  However, wrongfully denying benefits has a huge negative impact on the citizens who rely on the system.  If criteria like minimizing wrongful denials were not included in the contract, should engineers have included them in their optimization algorithm?  Why or why not?
+A18. TODO
+
+Q19. Imagine that after completing CS106B you are hired at IBM as an engineer working on this system. How might you have approached setting the goals of this system?  Is there a way you could design the procedures for code testing and release in your group to avoid the severe negative impacts on users of the system that are outlined in the case study?
+A19. TODO
