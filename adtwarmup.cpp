@@ -26,7 +26,8 @@ void reverse(Queue<int>& q) {
  * information on how to test and diagnose.
  */
 void duplicateNegatives(Queue<int>& q) {
-    for (int i = 0; i < q.size(); i++) {
+    int initialSize = q.size();
+    for (int i = 0; i < initialSize; i++) {
         int val = q.dequeue();
         q.enqueue(val);
         if (val < 0) {
@@ -40,7 +41,7 @@ void duplicateNegatives(Queue<int>& q) {
 // WARNING: the given code is buggy. See exercise writeup for more
 // information on how to test and diagnose.
 int sumStack(Stack<int> s) {
-    int total = s.pop();
+    int total = 0;
     while (!s.isEmpty()) {
         total += s.pop();
     }
@@ -92,4 +93,36 @@ PROVIDED_TEST("sumStack, empty stack") {
     Stack<int> empty;
 
     EXPECT_EQUAL(sumStack(empty), 0);
+}
+
+// STUDENT TESTS
+STUDENT_TEST("check duplicateNegatives functionality w/ one negative number") {
+    Queue<int> q = {-3};
+    Queue<int> expected = {-3, -3};
+    duplicateNegatives(q);
+    EXPECT_EQUAL(q, expected);
+}
+
+STUDENT_TEST("check duplicateNegatives functionality w/ two negative numbers sandwiched") {
+    Queue<int> q = {-1, 0, -1};
+    Queue<int> expected = {-1, -1, 0, -1, -1};
+
+    duplicateNegatives(q);
+    EXPECT_EQUAL(q, expected);
+}
+
+STUDENT_TEST("check duplicateNegatives functionality w/ negative between two positive numbers") {
+    Queue<int> q = {3, -1, 3};
+    Queue<int> expected = {3, -1, -1, 3};
+
+    duplicateNegatives(q);
+    EXPECT_EQUAL(q, expected);
+}
+
+STUDENT_TEST("check duplicateNegatives functionality w/ specific odd/even indices") {
+    Queue<int> q = {0, -1, 2, -3};
+    Queue<int> expected = {0, -1, -1, 2, -3, -3};
+
+    duplicateNegatives(q);
+    EXPECT_EQUAL(q, expected);
 }

@@ -1,20 +1,27 @@
-Before submitting this file, make sure that there are no more TODO
-placeholders remaining in the file (and remove this comment too).
-
 Warmup
 ------
 
 Q1. The display of the Stack in the debugger uses the label 'top' to mark the top end of the stack. How are the contents labeled when the Stack contains only one element?
-A1. TODO
+A1. When the Stack only contains one element, the singular element is labelled "top" in the variables pane, where we are able to see its value and type under 's'.
 
 Q2. For which type of inputs does the function go into an infinite loop?
-A2. TODO
+A2. The function goes into an infinite loop for a single negative integer input. 
 
 Q3. Show your edited code for `duplicateNegatives` that fixes the problem with the infinite loop.
-A3. TODO
+A3.
+void duplicateNegatives(Queue<int>& q) {
+    int initialSize = q.size();
+    for (int i = 0; i < initialSize; i++) {
+        int val = q.dequeue();
+        q.enqueue(val);
+        if (val < 0) {
+            q.enqueue(val);   // double up on negative numbers
+        }
+    }
+}
 
 Q4. What is the better fix to `sumStack` that corrects the bug?
-A4. TODO
+A4. The better fix to `sumStack` is initializing an empty integer variable for total and setting it equal to 0. This way, sum will be unbothered until the while loop begins, which allows us to manually check for an empty string without a special case. 
 
 
 Maze
