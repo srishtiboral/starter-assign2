@@ -21,23 +21,68 @@ using namespace std;
 // behavior of the function and how you implemented this behavior
 Set<GridLocation> generateValidMoves(Grid<bool>& maze, GridLocation cur) {
     Set<GridLocation> neighbors;
-    /* TODO: Fill in the remainder of this function. */
+    Vector<GridLocation> possibleNeighbors;
+    int currentRow = cur.row;
+    int currentCol = cur.col;
+
+    // create top point
+    GridLocation topPoint((currentRow-1), (currentCol));
+    possibleNeighbors.add(topPoint);
+
+    // create left point
+    GridLocation leftPoint((currentRow),(currentCol-1));
+    possibleNeighbors.add(leftPoint);
+
+    // create right point
+    GridLocation rightPoint((currentRow), (currentCol+1));
+    possibleNeighbors.add(rightPoint);
+
+    // create down point
+    GridLocation downPoint((currentRow+1), (currentCol));
+    possibleNeighbors.add(downPoint);
+
+    // parse through 4 possible points and check if it's in the grid and a corridor
+    for (GridLocation p : possibleNeighbors) {
+        if ((p.col >= 0 && p.col < maze.numCols() && p.row >= 0 && p.row < maze.numRows()) && (maze[p.row][p.col] == true)) {
+            neighbors.add(p);
+        } else {
+            // do nothing, the neighbor isn't in the grid
+        }
+    }
     return neighbors;
 }
+
 
 // TODO: Add a function header comment here to explain the
 // behavior of the function and how you implemented this behavior
 void validatePath(Grid<bool>& maze, Vector<GridLocation>& path) {
-    if (path.isEmpty()) {
+    if (path.isEmpty()) { // check if path is empty
         error("Path is empty!");
     }
-    /* TODO: Fill in the remainder of this function. */
+    if (!(path[0].row == 0 && path[0].col == 0)) { // check if starts in top left corner
+        error("Path does not start at top left corner!");
+    }
+    if (!(path[path.size()-1].row == maze.numRows()-1) || !(path[path.size()-1].col == maze.numCols()-1)) { // check if ends in bottom right corner
+        error("Path does not end at bottom right corner!");
+    }
 
-    /* If you find a problem with the path, call error() to report it.
-     * If the path is a valid solution, then this function should run to completion
-     * without raising any errors.
-     */
+    // check if current index is a valid move
+    for (int i = 0; i < path.size()-1; i++) {
+        if (!(generateValidMoves(maze, path[i]).contains(path[i+1]))) {
+            error("This path is not valid.");
+        }
+    }
+
+    // check if path is a loop
+    Set<GridLocation> duplicates;
+    for (GridLocation index : path) {
+        if (duplicates.contains(index)) {
+            error("This path has a loop!");
+        }
+        duplicates.add(index);
+    }
 }
+
 
 // TODO: Add a function header comment here to explain the
 // behavior of the function and how you implemented this behavior
@@ -50,6 +95,7 @@ Vector<GridLocation> solveMazeBFS(Grid<bool>& maze) {
     return path;
 }
 
+
 // TODO: Add a function header comment here to explain the
 // behavior of the function and how you implemented this behavior
 Vector<GridLocation> solveMazeDFS(Grid<bool>& maze) {
@@ -60,6 +106,7 @@ Vector<GridLocation> solveMazeDFS(Grid<bool>& maze) {
     /* TODO: Fill in the remainder of this function. */
     return path;
 }
+
 
 /*
  * The given readMazeFile function correctly reads a well-formed
@@ -102,6 +149,7 @@ void readMazeFile(string filename, Grid<bool>& maze) {
         }
     }
 }
+
 
 /* The given readSolutionFile correctly reads a path from a file.
  *
