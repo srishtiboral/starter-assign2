@@ -52,6 +52,16 @@ Set<GridLocation> generateValidMoves(Grid<bool>& maze, GridLocation cur) {
     return neighbors;
 }
 
+bool checkDuplicates(Vector<GridLocation> path) {
+    Set<GridLocation> duplicates;
+    for (GridLocation index : path) {
+        if (duplicates.contains(index)) {
+            return false;
+        }
+        duplicates.add(index);
+    }
+    return true;
+}
 
 // TODO: Add a function header comment here to explain the
 // behavior of the function and how you implemented this behavior
@@ -74,12 +84,8 @@ void validatePath(Grid<bool>& maze, Vector<GridLocation>& path) {
     }
 
     // check if path is a loop
-    Set<GridLocation> duplicates;
-    for (GridLocation index : path) {
-        if (duplicates.contains(index)) {
-            error("This path has a loop!");
-        }
-        duplicates.add(index);
+    if(!checkDuplicates(path)) {
+        error("This path has a loop!");
     }
 }
 
@@ -89,9 +95,34 @@ void validatePath(Grid<bool>& maze, Vector<GridLocation>& path) {
 Vector<GridLocation> solveMazeBFS(Grid<bool>& maze) {
     Vector<GridLocation> path;
     Queue<Vector<GridLocation>> allPaths;
+    GridLocation entryPoint(0, 0);
+    path.add(entryPoint);
+
+    while(!allPaths.isEmpty()) {
+        Vector<GridLocation> currPath = allPaths.dequeue();
+        GridLocation currEndPoint((currPath[currPath.size()-1].row), (currPath[currPath.size()-1].col));
+
+        if ((currEndPoint.row == maze.numCols()-1) && (currEndPoint.col == maze.numRows()-1)) {
+            path = currPath;
+        } else {
+            Set<GridLocation> validNeighbors;
+            validNeighbors = generateValidMoves(maze, currEndPoint);
+            Set<GridLocation> viableNeighbors:
+            // for every point in generateValidMoves, check if it's a point we've seen in currPath
+            for (GridLocation neighbor : validNeighbors) {
+                for (GridLocation point : currPath) {
+                    if (!neighbor == point) {
+                        viableNeighbors.add(neighbor);
+                    }
+                }
+                Vector<GridLocation> copy = currPath;
+                copy.add(neighbor);
+                allPaths.enqueue(copy);
+           }
+        }
+    }
 
     drawMaze(maze);
-    /* TODO: Fill in the remainder of this function. */
     return path;
 }
 
