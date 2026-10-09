@@ -98,27 +98,30 @@ Vector<GridLocation> solveMazeBFS(Grid<bool>& maze) {
     GridLocation entryPoint(0, 0);
     path.add(entryPoint);
 
+    drawMaze(maze);
     while(!allPaths.isEmpty()) {
         Vector<GridLocation> currPath = allPaths.dequeue();
         GridLocation currEndPoint((currPath[currPath.size()-1].row), (currPath[currPath.size()-1].col));
 
-        if ((currEndPoint.row == maze.numCols()-1) && (currEndPoint.col == maze.numRows()-1)) {
+        if ((currEndPoint.row == maze.numRows()-1) && (currEndPoint.col == maze.numCols()-1)) {
             path = currPath;
         } else {
             Set<GridLocation> validNeighbors;
             validNeighbors = generateValidMoves(maze, currEndPoint);
-            Set<GridLocation> viableNeighbors:
+            Set<GridLocation> viableNeighbors;
             // for every point in generateValidMoves, check if it's a point we've seen in currPath
             for (GridLocation neighbor : validNeighbors) {
                 for (GridLocation point : currPath) {
-                    if (!neighbor == point) {
+                    if (!(neighbor == point)) {
                         viableNeighbors.add(neighbor);
                     }
                 }
+            }
+            for (GridLocation viablePoint : viableNeighbors){
                 Vector<GridLocation> copy = currPath;
-                copy.add(neighbor);
+                copy.add(viablePoint);
                 allPaths.enqueue(copy);
-           }
+            }
         }
     }
 
