@@ -24,8 +24,12 @@
 using namespace std;
 
 
-// TODO: Add a function header comment here to explain the
-// behavior of the function and how you implemented this behavior
+/* Returns a Set of all valid moves from the current location.
+ * A valid move is one step up, down, left, or right that is inside the maze and is an open corridor.
+ * Parameters: maze (the grid of walls and corridors), cur (the current location)
+ * Returns: a Set of the neighboring locations you can move to
+*/
+
 Set<GridLocation> generateValidMoves(Grid<bool>& maze, GridLocation cur) {
     Set<GridLocation> neighbors;
     Vector<GridLocation> possibleNeighbors;
@@ -59,7 +63,13 @@ Set<GridLocation> generateValidMoves(Grid<bool>& maze, GridLocation cur) {
     return neighbors;
 }
 
-bool checkDuplicates(Vector<GridLocation> path) {
+/* Checks whether a path visits any location more than once.
+ * It adds each location to a Set and stops if it finds one that is already there.
+ * Parameter: path (the path to check)
+ * Returns: true if there are no repeated locations, false if there is a loop
+*/
+
+bool checkDuplicates(Vector<GridLocation> &path) {
     Set<GridLocation> duplicates;
     for (GridLocation index : path) {
         if (duplicates.contains(index)) {
@@ -70,8 +80,13 @@ bool checkDuplicates(Vector<GridLocation> path) {
     return true;
 }
 
-// TODO: Add a function header comment here to explain the
-// behavior of the function and how you implemented this behavior
+/* Checks whether a path is a valid solution to the maze. The path must not
+ * be empty, must start at the top left corner, must end at the bottom right corner,
+ * must only move to valid neighbors, and must not have a loop.
+ * Parameters: maze (the grid of walls and corridors), path (the path to check)
+ * Returns: nothing if the path is valid. Calls error with a message describing the problem if it is not.
+ */
+
 void validatePath(Grid<bool>& maze, Vector<GridLocation>& path) {
     if (path.isEmpty()) { // check if path is empty
         error("Path is empty!");
@@ -97,8 +112,16 @@ void validatePath(Grid<bool>& maze, Vector<GridLocation>& path) {
 }
 
 
-// TODO: Add a function header comment here to explain the
-// behavior of the function and how you implemented this behavior
+/* Finds a path from the top left corner to the bottom right corner using breadth-first search.
+ * It keeps a queue of paths, starting with a path that only has the entry.
+ * Each step dequeues a path, and if it ends at the exit, returns it.
+ * Otherwise it adds a new path for each valid neighbor that
+ * hasn't been visited yet. Because shorter paths are explored first, the
+ * path returned is the shortest one.
+ * Parameter: maze (the grid of walls and corridors)
+ * Returns: a solution path from entry to exit
+*/
+
 Vector<GridLocation> solveMazeBFS(Grid<bool>& maze) {
     Vector<GridLocation> path;
     Queue<Vector<GridLocation>> allPaths;
@@ -145,8 +168,14 @@ Vector<GridLocation> solveMazeBFS(Grid<bool>& maze) {
 }
 
 
-// TODO: Add a function header comment here to explain the
-// behavior of the function and how you implemented this behavior
+/* Finds a path from the top left corner to the bottom right corner using
+ * depth-first search. It works the same as solveMazeBFS but uses a stack
+ * instead of a queue, so it follows one path as far as it can before backing up to try others.
+ * The path returned is valid but may not be the shortest.
+ * Parameter: maze (the grid of walls and corridors)
+ * Returns: a solution path from entry to exit
+ */
+
 Vector<GridLocation> solveMazeDFS(Grid<bool>& maze) {
     Vector<GridLocation> path;
     Stack<Vector<GridLocation>> allPaths;
