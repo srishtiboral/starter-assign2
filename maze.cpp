@@ -13,7 +13,7 @@
 #include "set.h"
 #include "stack.h"
 #include "vector.h"
-#include "SimpleTest.h" // IWYU pragma: keep (needed to quiet spurious warning)
+#include "SimpleTest.h"
 using namespace std;
 
 
@@ -95,38 +95,46 @@ void validatePath(Grid<bool>& maze, Vector<GridLocation>& path) {
 Vector<GridLocation> solveMazeBFS(Grid<bool>& maze) {
     Vector<GridLocation> path;
     Queue<Vector<GridLocation>> allPaths;
-    GridLocation entryPoint(0, 0);
-    path.add(entryPoint);
 
     drawMaze(maze);
-    while(!allPaths.isEmpty()) {
-        Vector<GridLocation> currPath = allPaths.dequeue();
-        GridLocation currEndPoint((currPath[currPath.size()-1].row), (currPath[currPath.size()-1].col));
 
-        if ((currEndPoint.row == maze.numRows()-1) && (currEndPoint.col == maze.numCols()-1)) {
-            path = currPath;
-        } else {
-            Set<GridLocation> validNeighbors;
-            validNeighbors = generateValidMoves(maze, currEndPoint);
-            Set<GridLocation> viableNeighbors;
-            // for every point in generateValidMoves, check if it's a point we've seen in currPath
-            for (GridLocation neighbor : validNeighbors) {
-                for (GridLocation point : currPath) {
-                    if (!(neighbor == point)) {
-                        viableNeighbors.add(neighbor);
-                    }
+    // create starting path which only has (0,0)
+    Vector<GridLocation> startPath;
+    GridLocation entryPoint(0,0);
+    startPath.add(entryPoint);
+    allPaths.enqueue(startPath);
+
+    // define end point as bottom right corner of maze
+    GridLocation exitPoint(maze.numRows() - 1, maze.numCols() - 1);
+
+    // loop through all paths
+    while(!allPaths.isEmpty()) {
+        path = allPaths.dequeue();
+        GridLocation currEnd = path[path.size() - 1];
+
+        // if the current point on the path is at the end point of maze, return path
+        if (currEnd == exitPoint) {
+            return path;
+        }
+
+        // parse through the valid moves and see if they've been on the path
+        for (GridLocation neighbor : generateValidMoves(maze, currEnd)) {
+            bool seen = false;
+            for (GridLocation point : path) { // parse through points on path
+                if (point == neighbor) { // is point on path same as neighbor?
+                    seen = true;
+                    break;
                 }
             }
-            for (GridLocation viablePoint : viableNeighbors){
-                Vector<GridLocation> copy = currPath;
-                copy.add(viablePoint);
+            if (!seen) {
+                Vector<GridLocation> copy = path;
+                copy.add(neighbor);
                 allPaths.enqueue(copy);
+                highlightPath(path, "blue", 50);   // animation
             }
         }
     }
-
-    drawMaze(maze);
-    return path;
+    return {};
 }
 
 
@@ -137,8 +145,44 @@ Vector<GridLocation> solveMazeDFS(Grid<bool>& maze) {
     Stack<Vector<GridLocation>> allPaths;
 
     drawMaze(maze);
-    /* TODO: Fill in the remainder of this function. */
-    return path;
+
+    Vector<GridLocation> startPath;
+    GridLocation entryPoint(0,0);
+    startPath.add(entryPoint);
+    allPaths.push(startPath);
+
+    // define end point as bottom right corner of maze
+    GridLocation exitPoint(maze.numRows() - 1, maze.numCols() - 1);
+
+    // loop through all paths
+    while(!allPaths.isEmpty()) {
+        path = allPaths.pop();
+        GridLocation currEnd = path[path.size() - 1];
+
+        // if the current point on the path is at the end point of maze, return path
+        if (currEnd == exitPoint) {
+            return path;
+        }
+
+        // parse through the valid moves and see if they've been on the path
+        for (GridLocation neighbor : generateValidMoves(maze, currEnd)) {
+            bool seen = false;
+            for (GridLocation point : path) { // parse through points on path
+                if (point == neighbor) { // is point on path same as neighbor?
+                    seen = true;
+                    break;
+                }
+            }
+            if (!seen) {
+                Vector<GridLocation> copy = path;
+                copy.add(neighbor);
+                allPaths.push(copy);
+                highlightPath(path, "blue", 50);   // animation
+
+            }
+        }
+    }
+    return {};
 }
 
 
