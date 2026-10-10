@@ -1,7 +1,14 @@
-// TODO: remove and replace this file header comment
-// This is a .cpp file you will edit and turn in.
-// Remove starter comments and add your own
-// comments on each function and on complex code sections.
+/*
+ * maze.cpp
+ * Name: Srishti Boral & Anika Mukherjee
+ * Course: CS 106B
+ * Description: This file contains functions to represent, check, and solve
+ * mazes. generateValidMoves finds the open neighbors of a location,
+ * validatePath checks whether a path is a correct solution, and
+ * solveMazeBFS and solveMazeDFS search for a path from the entry to the
+ * exit using a queue and a stack of paths.
+ */
+
 #include <iostream>
 #include <fstream>
 #include "error.h"
@@ -325,3 +332,106 @@ PROVIDED_TEST("solveMazeDFS on file 21x23") {
 }
 
 // TODO: add your test cases here
+STUDENT_TEST("generateValidMoves on bottom right corner of open 3x3 grid") {
+    Grid<bool> maze =   {{true, true, true},
+                        {true, true, true},
+                        {true, true, true}};
+    GridLocation corner = {2, 2};
+    Set<GridLocation> expected = {{1, 2}, {2, 1}};
+    EXPECT_EQUAL(generateValidMoves(maze, corner), expected);
+}
+
+STUDENT_TEST("generateValidMoves when surrounded by walls returns empty set") {
+    Grid<bool> maze = {{false, false, false},
+                       {false, true, false},
+                       {false, false, false}};
+    GridLocation center = {1, 1};
+    Set<GridLocation> expected = {};
+    EXPECT_EQUAL(generateValidMoves(maze, center), expected);
+}
+
+STUDENT_TEST("generateValidMoves in center with walls on two sides") {
+    Grid<bool> maze = {{true, false, true},
+                       {false, true, true},
+                       {true, true, true}};
+    GridLocation center = {1, 1};
+    Set<GridLocation> expected = {{1, 2}, {2, 1}};
+    EXPECT_EQUAL(generateValidMoves(maze, center), expected);
+}
+
+STUDENT_TEST("checkDuplicates finds repeats and passes paths with none") {
+    Vector<GridLocation> noRepeats = {{0, 0}, {0, 1}, {1, 1}};
+    Vector<GridLocation> repeats = {{0, 0}, {0, 1}, {0, 0}};
+    EXPECT(checkDuplicates(noRepeats));
+    EXPECT(!checkDuplicates(repeats));
+
+}
+
+STUDENT_TEST("validatePath on empty path should return error") {
+    Grid<bool> maze = {{true, true}, {true, true}};
+    Vector<GridLocation> empty = {};
+    EXPECT_ERROR(validatePath(maze, empty));
+}
+
+STUDENT_TEST("validatePath on path with a loop should reurtn error") {
+    Grid<bool> maze = {{true, true}, {true, true}};
+    Vector<GridLocation> loop = {{0, 0}, {0, 1}, {0, 0}, {1, 0}, {1, 1}};
+    EXPECT_ERROR(validatePath(maze, loop));
+}
+
+STUDENT_TEST("validatePath on path that jumps diagonally should return error") {
+    Grid<bool> maze = {{true, true}, {true, true}};
+    Vector<GridLocation> diagonal = {{0, 0}, {1, 1}};
+    EXPECT_ERROR(validatePath(maze, diagonal));
+}
+
+STUDENT_TEST("validatePath on correct path in  3x3 grid") {
+    Grid<bool> maze = {{true, true, true}, {true, true, true}, {true, true, true}};
+    Vector<GridLocation> soln = {{0, 0}, {0, 1}, {0, 2}, {1, 2}, {2, 2}};
+    EXPECT_NO_ERROR(validatePath(maze, soln));
+}
+
+STUDENT_TEST("solveMazeBFS finds the shortest path on 5x7, matching the given solution file") {
+    Grid<bool> maze;
+    Vector<GridLocation> soln;
+    readMazeFile("res/5x7.maze", maze);
+    readSolutionFile("res/5x7.soln", soln);
+    EXPECT_EQUAL(solveMazeBFS(maze), soln);
+}
+
+STUDENT_TEST("solveMazeBFS on 3x3 grid finds a shortest path (5)") {
+    Grid<bool> maze = {{true, true, true},
+                       {true, true, true},
+                       {true, true, true}};
+    Vector<GridLocation> soln = solveMazeBFS(maze);
+    EXPECT_NO_ERROR(validatePath(maze, soln));
+    EXPECT_EQUAL(soln.size(), 5);
+}
+
+STUDENT_TEST("solveMazeBFS on file 21x23") {
+    Grid<bool> maze; readMazeFile("res/21x23.maze", maze);
+    Vector<GridLocation> soln = solveMazeBFS(maze);
+    EXPECT_NO_ERROR(validatePath(maze, soln));
+}
+
+STUDENT_TEST("solveMazeDFS on file 5x7") {
+    Grid<bool> maze; readMazeFile("res/5x7.maze", maze);
+    Vector<GridLocation> soln = solveMazeDFS(maze);
+    EXPECT_NO_ERROR(validatePath(maze, soln));
+}
+
+STUDENT_TEST("solveMazeDFS on 3x3 grid finds a valid path") {
+    Grid<bool> maze = {{true, true, true},
+                       {true, true, true},
+                       {true, true, true}};
+    Vector<GridLocation> soln = solveMazeDFS(maze);
+    EXPECT_NO_ERROR(validatePath(maze, soln));
+}
+
+STUDENT_TEST("BFS path is never longer than DFS path on 21x23") {
+    Grid<bool> maze;
+    readMazeFile("res/21x23.maze", maze);
+    Vector<GridLocation> bfs = solveMazeBFS(maze);
+    Vector<GridLocation> dfs = solveMazeDFS(maze);
+    EXPECT(bfs.size() <= dfs.size());
+}
