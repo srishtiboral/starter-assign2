@@ -12,34 +12,74 @@
 #include "simpio.h"
 #include "strlib.h"
 #include "vector.h"
-#include "SimpleTest.h" // IWYU pragma: keep (needed to quiet spurious warning)
+#include "SimpleTest.h"
 using namespace std;
 
 
 // TODO: Add a function header comment here to explain the
 // behavior of the function and how you implemented this behavior
 string cleanToken(string s) {
-    return s;
+    string fixed;
+    for (char ch : s) {
+        if (isalnum(ch)) {
+            fixed += ch;
+        }
+    }
+    return toLowerCase(fixed);
 }
 
 // TODO: Add a function header comment here to explain the
 // behavior of the function and how you implemented this behavior
 Set<string> gatherTokens(string text) {
     Set<string> tokens;
+    string delim = " ";
+    Vector<string> noSpaces = stringSplit(text, delim);
+
+    for (int i=0; i<noSpaces.size(); i++) {
+        string currToken = cleanToken(noSpaces[i]);
+        if (!(tokens.contains(currToken)) && !(currToken.empty())) {
+            tokens.add(currToken);
+        }
+    }
+
     return tokens;
 }
 
 // TODO: Add a function header comment here to explain the
 // behavior of the function and how you implemented this behavior
 int buildIndex(string dbfile, Map<string, Set<string>>& index) {
-    return 0;
+    ifstream in;
+    if (!openFile(in, dbfile))
+        error("Cannot open file named " + dbfile);
+
+    Vector<string> lines = stringSplit(readEntire(in), '\n');
+    Vector<string> urls;
+    Vector<string> items;
+
+    for (int i=0; i<lines.size(); i++) {
+        if (i % 2 == 0) {
+            urls.add(lines[i]);
+        } else {
+            items.add(lines[i]);
+        }
+    }
+
+    for (int i=0; i<urls.size(); i++) {
+        Set<string> uniqueWords = gatherTokens(items[i]);
+        for (string token : uniqueWords) {
+            index[token].add(urls[i]);
+        }
+    }
+    return urls.size();
 }
 
 // TODO: Add a function header comment here to explain the
 // behavior of the function and how you implemented this behavior
 Set<string> findQueryMatches(Map<string, Set<string>>& index, string query) {
     Set<string> result;
-    // TODO: your code here
+    Vector<string> splitQueries = stringSplit(query, " ");
+    string firstTerm = splitQueries[0];
+
     return result;
 }
 
