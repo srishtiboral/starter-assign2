@@ -77,8 +77,29 @@ int buildIndex(string dbfile, Map<string, Set<string>>& index) {
 // behavior of the function and how you implemented this behavior
 Set<string> findQueryMatches(Map<string, Set<string>>& index, string query) {
     Set<string> result;
-    Vector<string> splitQueries = stringSplit(query, " ");
-    string firstTerm = splitQueries[0];
+    Vector<string> terms = stringSplit(query, " ");
+    string firstTerm = cleanToken(terms[0]);
+
+    if (index.containsKey(firstTerm)) {
+        result = index[firstTerm];
+    }
+
+    for (int i=1; i<terms.size(); i++) {
+        string modifier = "";
+        string currTerm = terms[i];
+        if ((startsWith(currTerm, "+")) || (startsWith(currTerm, "-"))) {
+            modifier = currTerm.substr(0,1);
+        }
+        currTerm = cleanToken(currTerm);
+
+        if (modifier == "+") {
+            result.intersect(index[cleanToken(currTerm)]);
+        } else if (modifier == "-") {
+            result.difference(index[cleanToken(currTerm)]);
+        } else {
+            result.unionWith(index[cleanToken(currTerm)]);
+        }
+    }
 
     return result;
 }
@@ -86,8 +107,26 @@ Set<string> findQueryMatches(Map<string, Set<string>>& index, string query) {
 // TODO: Add a function header comment here to explain the
 // behavior of the function and how you implemented this behavior
 void searchEngine(string dbfile) {
-    // TODO: your code here
+    Map<string, Set<string>> index;
+
+    cout << "Stand by while building index... " << endl;
+    int numPages = buildIndex(dbfile, index);
+    cout << "Indexed " << numPages << " containing " << index.size() << " unique terms." << endl;
+    cout << "" << endl;
+
+    while (true) {
+        string query = getLine("Enter query sentence (RETURN/ENTER) to quit): ");
+        if (query == "") {
+            break;
+        }
+
+        Set<string> matches = findQueryMatches(index, query);
+        cout << "Found " << matches.size() << " matching pages" << endl;
+        cout << "{" << matches << "}" << endl;
+    }
 }
+
+searchEngine("res/website.txt");
 
 /* * * * * * Test Cases * * * * * */
 
