@@ -54,7 +54,7 @@ Set<GridLocation> generateValidMoves(Grid<bool>& maze, GridLocation cur) {
 
     // parse through 4 possible points and check if it's in the grid and a corridor
     for (GridLocation p : possibleNeighbors) {
-        if ((p.col >= 0 && p.col < maze.numCols() && p.row >= 0 && p.row < maze.numRows()) && (maze[p.row][p.col] == true)) {
+        if (maze.inBounds(p) && maze[p]) {
             neighbors.add(p);
         } else {
             // do nothing, the neighbor isn't in the grid
@@ -70,12 +70,12 @@ Set<GridLocation> generateValidMoves(Grid<bool>& maze, GridLocation cur) {
 */
 
 bool checkNoDuplicates(Vector<GridLocation> &path) {
-    Set<GridLocation> duplicates;
-    for (GridLocation index : path) {
-        if (duplicates.contains(index)) {
+    Set<GridLocation> visited;
+    for (GridLocation loc : path) {
+        if (visited.contains(loc)) {
             return false;
         }
-        duplicates.add(index);
+        visited.add(loc);
     }
     return true;
 }
@@ -88,28 +88,45 @@ bool checkNoDuplicates(Vector<GridLocation> &path) {
  */
 
 void validatePath(Grid<bool>& maze, Vector<GridLocation>& path) {
+    GridLocation entry = {0, 0};
+    GridLocation exit = {maze.numRows() - 1, maze.numCols() - 1};
     if (path.isEmpty()) { // check if path is empty
         error("Path is empty!");
     }
-    if (!(path[0].row == 0 && path[0].col == 0)) { // check if starts in top left corner
+    if (path[0] != entry) { // check if starts in top left corner
         error("Path does not start at top left corner!");
     }
-    if (!(path[path.size()-1].row == maze.numRows()-1) || !(path[path.size()-1].col == maze.numCols()-1)) { // check if ends in bottom right corner
+    if (path[path.size() - 1] != exit) { // check if ends in bottom right corner
         error("Path does not end at bottom right corner!");
     }
 
     // check if current index is a valid move
-    for (int i = 0; i < path.size()-1; i++) {
-        if (!(generateValidMoves(maze, path[i]).contains(path[i+1]))) {
+    for (int i = 0; i < path.size() - 1; i++) {
+        if (!(generateValidMoves(maze, path[i]).contains(path[i + 1]))) {
             error("This path is not valid.");
         }
     }
 
     // check if path is a loop
-    if(!checkNoDuplicates(path)) {
+    if (!checkNoDuplicates(path)) {
         error("This path has a loop!");
     }
 }
+
+/*
+ * Checks whether a location has already appeared on the path given.
+ * Parameters: path (the path we want to parse through), loc (the loc we're checking)
+ * Returns: true if loc already showed up, false if not
+ */
+bool isOnPath(Vector<GridLocation>& path, GridLocation loc) {
+    for (GridLocation point : path) {
+        if (point == loc) {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 
 /* Finds a path from the top left corner to the bottom right corner using breadth-first search.
@@ -138,8 +155,9 @@ Vector<GridLocation> solveMazeBFS(Grid<bool>& maze) {
     GridLocation exitPoint(maze.numRows() - 1, maze.numCols() - 1);
 
     // loop through all paths
-    while(!allPaths.isEmpty()) {
+    while (!allPaths.isEmpty()) {
         path = allPaths.dequeue();
+        highlightPath(path, "blue", 50);   // animation
         GridLocation currEnd = path[path.size() - 1];
 
         // if the current point on the path is at the end point of maze, return path
@@ -149,18 +167,10 @@ Vector<GridLocation> solveMazeBFS(Grid<bool>& maze) {
 
         // parse through the valid moves and see if they've been on the path
         for (GridLocation neighbor : generateValidMoves(maze, currEnd)) {
-            bool seen = false;
-            for (GridLocation point : path) { // parse through points on path
-                if (point == neighbor) { // is point on path same as neighbor?
-                    seen = true;
-                    break;
-                }
-            }
-            if (!seen) {
-                Vector<GridLocation> copy = path;
-                copy.add(neighbor);
-                allPaths.enqueue(copy);
-                highlightPath(path, "blue", 50);   // animation
+            if (!isOnPath(path, neighbor)) {
+                Vector<GridLocation> nextPath = path;
+                nextPath.add(neighbor);
+                allPaths.enqueue(nextPath);
             }
         }
     }
@@ -191,9 +201,10 @@ Vector<GridLocation> solveMazeDFS(Grid<bool>& maze) {
     GridLocation exitPoint(maze.numRows() - 1, maze.numCols() - 1);
 
     // loop through all paths
-    while(!allPaths.isEmpty()) {
+    while (!allPaths.isEmpty()) {
         path = allPaths.pop();
         GridLocation currEnd = path[path.size() - 1];
+        highlightPath(path, "blue", 50);   // animation
 
         // if the current point on the path is at the end point of maze, return path
         if (currEnd == exitPoint) {
@@ -202,19 +213,10 @@ Vector<GridLocation> solveMazeDFS(Grid<bool>& maze) {
 
         // parse through the valid moves and see if they've been on the path
         for (GridLocation neighbor : generateValidMoves(maze, currEnd)) {
-            bool seen = false;
-            for (GridLocation point : path) { // parse through points on path
-                if (point == neighbor) { // is point on path same as neighbor?
-                    seen = true;
-                    break;
-                }
-            }
-            if (!seen) {
-                Vector<GridLocation> copy = path;
-                copy.add(neighbor);
-                allPaths.push(copy);
-                highlightPath(path, "blue", 50);   // animation
-
+            if (!isOnPath(path, neighbor)) {
+                Vector<GridLocation> nextPath = path;
+                nextPath.add(neighbor);
+                allPaths.push(nextPath);
             }
         }
     }
@@ -362,8 +364,8 @@ PROVIDED_TEST("solveMazeDFS on file 21x23") {
 
 STUDENT_TEST("generateValidMoves on bottom right corner of open 3x3 grid") {
     Grid<bool> maze =   {{true, true, true},
-                        {true, true, true},
-                        {true, true, true}};
+                       {true, true, true},
+                       {true, true, true}};
     GridLocation corner = {2, 2};
     Set<GridLocation> expected = {{1, 2}, {2, 1}};
     EXPECT_EQUAL(generateValidMoves(maze, corner), expected);

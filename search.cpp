@@ -29,9 +29,9 @@ using namespace std;
  * Returns: the cleaned token, or the empty string if the token has no letters or digits
  */
 
-string cleanToken(string s) {
+string cleanToken(string token) {
     string fixed;
-    for (char ch : s) {
+    for (char ch : token) {
         if (isalnum(ch)) {
             fixed += ch;
         }
@@ -50,7 +50,7 @@ Set<string> gatherTokens(string text) {
     string delim = " ";
     Vector<string> noSpaces = stringSplit(text, delim);
 
-    for (int i=0; i<noSpaces.size(); i++) {
+    for (int i = 0; i < noSpaces.size(); i++) {
         string currToken = cleanToken(noSpaces[i]);
         if (!(tokens.contains(currToken)) && !(currToken.empty())) {
             tokens.add(currToken);
@@ -70,14 +70,15 @@ Set<string> gatherTokens(string text) {
 
 int buildIndex(string dbfile, Map<string, Set<string>>& index) {
     ifstream in;
-    if (!openFile(in, dbfile))
+    if (!openFile(in, dbfile)) {
         error("Cannot open file named " + dbfile);
+    }
 
     Vector<string> lines = stringSplit(readEntire(in), '\n');
     Vector<string> urls;
     Vector<string> items;
 
-    for (int i=0; i<lines.size(); i++) {
+    for (int i = 0; i < lines.size(); i++) {
         if (i % 2 == 0) {
             urls.add(lines[i]);
         } else {
@@ -85,7 +86,7 @@ int buildIndex(string dbfile, Map<string, Set<string>>& index) {
         }
     }
 
-    for (int i=0; i<urls.size(); i++) {
+    for (int i = 0; i < urls.size(); i++) {
         Set<string> uniqueWords = gatherTokens(items[i]);
         for (string token : uniqueWords) {
             index[token].add(urls[i]);
@@ -112,7 +113,7 @@ Set<string> findQueryMatches(Map<string, Set<string>>& index, string query) {
         result = index[firstTerm];
     }
 
-    for (int i=1; i<terms.size(); i++) {
+    for (int i = 1; i < terms.size(); i++) {
         string modifier = "";
         string currTerm = terms[i];
         if ((startsWith(currTerm, "+")) || (startsWith(currTerm, "-"))) {
@@ -145,18 +146,18 @@ void searchEngine(string dbfile) {
 
     cout << "Stand by while building index... " << endl;
     int numPages = buildIndex(dbfile, index);
-    cout << "Indexed " << numPages << " containing " << index.size() << " unique terms." << endl;
+    cout << "Indexed " << numPages << " pages containing " << index.size() << " unique terms." << endl;
     cout << "" << endl;
 
     while (true) {
-        string query = getLine("Enter query sentence (RETURN/ENTER) to quit): ");
+        string query = getLine("Enter query sentence (RETURN/ENTER) to quit: ");
         if (query == "") {
             break;
         }
 
         Set<string> matches = findQueryMatches(index, query);
         cout << "Found " << matches.size() << " matching pages" << endl;
-        cout << "{" << matches << "}" << endl;
+        cout << matches << endl;
     }
 }
 
