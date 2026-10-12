@@ -69,7 +69,7 @@ Set<GridLocation> generateValidMoves(Grid<bool>& maze, GridLocation cur) {
  * Returns: true if there are no repeated locations, false if there is a loop
 */
 
-bool checkDuplicates(Vector<GridLocation> &path) {
+bool checkNoDuplicates(Vector<GridLocation> &path) {
     Set<GridLocation> duplicates;
     for (GridLocation index : path) {
         if (duplicates.contains(index)) {
@@ -106,7 +106,7 @@ void validatePath(Grid<bool>& maze, Vector<GridLocation>& path) {
     }
 
     // check if path is a loop
-    if(!checkDuplicates(path)) {
+    if(!checkNoDuplicates(path)) {
         error("This path has a loop!");
     }
 }
@@ -387,11 +387,11 @@ STUDENT_TEST("generateValidMoves in center with walls on two sides") {
     EXPECT_EQUAL(generateValidMoves(maze, center), expected);
 }
 
-STUDENT_TEST("checkDuplicates finds repeats and passes paths with none") {
+STUDENT_TEST("checkNoDuplicates finds repeats and passes paths with none") {
     Vector<GridLocation> noRepeats = {{0, 0}, {0, 1}, {1, 1}};
     Vector<GridLocation> repeats = {{0, 0}, {0, 1}, {0, 0}};
-    EXPECT(checkDuplicates(noRepeats));
-    EXPECT(!checkDuplicates(repeats));
+    EXPECT(checkNoDuplicates(noRepeats));
+    EXPECT(!checkNoDuplicates(repeats));
 
 }
 
