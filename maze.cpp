@@ -360,7 +360,6 @@ PROVIDED_TEST("solveMazeDFS on file 21x23") {
     EXPECT_NO_ERROR(validatePath(maze, soln));
 }
 
-// TODO: add your test cases here
 STUDENT_TEST("generateValidMoves on bottom right corner of open 3x3 grid") {
     Grid<bool> maze =   {{true, true, true},
                         {true, true, true},
@@ -438,13 +437,15 @@ STUDENT_TEST("solveMazeBFS on 3x3 grid finds a shortest path (5)") {
 }
 
 STUDENT_TEST("solveMazeBFS on file 21x23") {
-    Grid<bool> maze; readMazeFile("res/21x23.maze", maze);
+    Grid<bool> maze;
+    readMazeFile("res/21x23.maze", maze);
     Vector<GridLocation> soln = solveMazeBFS(maze);
     EXPECT_NO_ERROR(validatePath(maze, soln));
 }
 
 STUDENT_TEST("solveMazeDFS on file 5x7") {
-    Grid<bool> maze; readMazeFile("res/5x7.maze", maze);
+    Grid<bool> maze;
+    readMazeFile("res/5x7.maze", maze);
     Vector<GridLocation> soln = solveMazeDFS(maze);
     EXPECT_NO_ERROR(validatePath(maze, soln));
 }

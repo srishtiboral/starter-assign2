@@ -1,7 +1,14 @@
-// TODO: remove and replace this file header comment
-// This is a .cpp file you will edit and turn in.
-// Remove starter comments and add your own
-// comments on each function and on complex code sections.
+/*
+ * search.cpp
+ * Names: Srishti Boral, Anika Mukherjee
+ * Course: CS 106B
+ * Description: This file contains a mini search engine. cleanToken and gatherTokens turn the body text of a web page
+ * into a set of cleaned, lowercase words.
+ * buildIndex reads a database file of pages and builds an
+ * inverted index that maps each word to the set of page URLs containing it.
+ * findQueryMatches uses the index to answer single or compound queries, and
+ * searchEngine ties everything together into a console program.
+ */
 #include <iostream>
 #include <fstream>
 #include "error.h"
@@ -16,8 +23,12 @@
 using namespace std;
 
 
-// TODO: Add a function header comment here to explain the
-// behavior of the function and how you implemented this behavior
+/*
+ * Returns a cleaned version of a token: only its letters and digits are kept, and all letters are made lowercase.
+ * Parameter: token (a single word from query)
+ * Returns: the cleaned token, or the empty string if the token has no letters or digits
+ */
+
 string cleanToken(string s) {
     string fixed;
     for (char ch : s) {
@@ -28,8 +39,12 @@ string cleanToken(string s) {
     return toLowerCase(fixed);
 }
 
-// TODO: Add a function header comment here to explain the
-// behavior of the function and how you implemented this behavior
+/* Splits body text on spaces, cleans each piece with cleanToken, and adds
+ * every non-empty cleaned token to a Set, so each word is stored once.
+ * Parameter: text (the body text of one web page)
+ * Returns: a Set of the unique cleaned tokens in the text
+*/
+
 Set<string> gatherTokens(string text) {
     Set<string> tokens;
     string delim = " ";
@@ -45,8 +60,14 @@ Set<string> gatherTokens(string text) {
     return tokens;
 }
 
-// TODO: Add a function header comment here to explain the
-// behavior of the function and how you implemented this behavior
+/* Reads a database file and fills in an inverted index. The file alternates lines:
+ * a page URL, then that page's body text. Even-numbered lines are saved as URLs and odd-numbered lines as body text.
+ * For each page, every unique token in its body text is mapped to that page's URL.
+ * Parameters: dbfile (path to the database file), index (the Map to fill, from each token to the set of URLs that contain it)
+ * Returns: the number of pages processed
+ * Errors: calls error if the file cannot be opened.
+ */
+
 int buildIndex(string dbfile, Map<string, Set<string>>& index) {
     ifstream in;
     if (!openFile(in, dbfile))
@@ -73,8 +94,15 @@ int buildIndex(string dbfile, Map<string, Set<string>>& index) {
     return urls.size();
 }
 
-// TODO: Add a function header comment here to explain the
-// behavior of the function and how you implemented this behavior
+/* Returns the set of URLs matching a query. The query is split on spaces
+ * and processed left to right. The first term's matches start the result.
+ * Each later term is cleaned and combined with the result based on its
+ * modifier: no modifier means union, "+" means intersect, and "-" means
+ * remove those pages.
+ * Parameters: index (the inverted index), query (one or more search terms)
+ * Returns: the set of URLs that match the query
+ */
+
 Set<string> findQueryMatches(Map<string, Set<string>>& index, string query) {
     Set<string> result;
     Vector<string> terms = stringSplit(query, " ");
@@ -104,8 +132,14 @@ Set<string> findQueryMatches(Map<string, Set<string>>& index, string query) {
     return result;
 }
 
-// TODO: Add a function header comment here to explain the
-// behavior of the function and how you implemented this behavior
+/* Runs the search engine console program. It builds an inverted index from
+ * the database file, prints how many pages and unique terms it found, then
+ * repeatedly asks the user for a query and prints the matching URLs. Stops
+ * when the user presses Enter on an empty line.
+ * Parameter: dbfile (path to the database file)
+ * Returns: nothing (prints results to the console)
+ */
+
 void searchEngine(string dbfile) {
     Map<string, Set<string>> index;
 
@@ -125,8 +159,6 @@ void searchEngine(string dbfile) {
         cout << "{" << matches << "}" << endl;
     }
 }
-
-searchEngine("res/website.txt");
 
 /* * * * * * Test Cases * * * * * */
 
@@ -193,4 +225,37 @@ PROVIDED_TEST("findQueryMatches from tiny.txt, compound queries") {
 }
 
 
-// TODO: add your test cases here
+STUDENT_TEST("cleanToken removes punctuation inside words and keeps digits") {
+    EXPECT_EQUAL(cleanToken("5lb_m&ms"), "5lbmms");
+    EXPECT_EQUAL(cleanToken("mid-quarter"), "midquarter");
+    EXPECT_EQUAL(cleanToken("<<blue>>"), "blue");
+}
+
+STUDENT_TEST("cleanToken on empty string and only digits") {
+    EXPECT_EQUAL(cleanToken(""), "");
+    EXPECT_EQUAL(cleanToken("10"), "10");
+}
+
+STUDENT_TEST("gatherTokens skips tokens that clean to empty and extra spaces") {
+    Set<string> expected = {"red", "blue"};
+    EXPECT_EQUAL(gatherTokens("red  ** blue !!"), expected);
+}
+
+STUDENT_TEST("gatherTokens on empty text returns empty set") {
+    Set<string> expected = {};
+    EXPECT_EQUAL(gatherTokens(""), expected);
+}
+
+STUDENT_TEST("findQueryMatches is not case-sensitive") {
+    Map<string, Set<string>> index;
+    buildIndex("res/tiny.txt", index);
+    EXPECT_EQUAL(findQueryMatches(index, "RED"), findQueryMatches(index, "red"));
+    EXPECT_EQUAL(findQueryMatches(index, "fish!"), findQueryMatches(index, "fish"));
+}
+
+STUDENT_TEST("findQueryMatches with words that are not in the index") {
+    Map<string, Set<string>> index;
+    buildIndex("res/tiny.txt", index);
+    EXPECT(findQueryMatches(index, "fish hippo +zebra").isEmpty());
+    EXPECT_EQUAL(findQueryMatches(index, "red hippo"), findQueryMatches(index, "red"));
+}
